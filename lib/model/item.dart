@@ -1,15 +1,25 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Item {
 
   // Atributos:
 
-  int? _id;
-  String _name;
-  String? _description;
-  String _condition;
-  String _location;
+  late String? _id;
+  late String _name;
+  late String? _description;
+  late String _condition;
+  late String _location;
 
 
   Item(this._name, this._location, this._condition, [this._description]);
+
+  Item.fromDocumentSnapshot(DocumentSnapshot doc){
+    _id = doc.id;
+    _name = doc["name"];
+    _description = doc["description"];
+    _condition = doc["condition"];
+    _location = doc["location"];
+  }
 
   // Construtor para quando já tivermos o id.
   Item.withId(this._id, this._name, this._location, this._condition,
@@ -33,7 +43,7 @@ class Item {
 
   String get name => _name;
 
-  int? get id => _id;
+  String? get id => _id;
 
   // Setters...
 

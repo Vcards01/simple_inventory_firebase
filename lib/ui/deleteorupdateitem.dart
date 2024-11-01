@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:simple_inventory/repository/firestorehelper.dart';
 import '../model/item.dart';
-import '../repository/dbhelper.dart';
 
 class EditItem extends StatefulWidget {
   final Item item;
@@ -12,7 +12,7 @@ class EditItem extends StatefulWidget {
 }
 
 class _EditItemState extends State<EditItem> {
-  DbHelper helper = DbHelper();
+  FirestoreHelper helper = FirestoreHelper();
 
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
@@ -103,7 +103,7 @@ class _EditItemState extends State<EditItem> {
       widget.item.description = description;
       widget.item.location = location;
 
-      await helper.updateItem(widget.item);
+      helper.updateItem(widget.item);
 
       Navigator.pop(context, true);
     }
@@ -137,7 +137,7 @@ class _EditItemState extends State<EditItem> {
 
   void _deleteItem() async {
     if (widget.item.id != null) {
-      await helper.deleteItem(widget.item.id!);
+      helper.deleteItem(widget.item.id.toString());
     }
 
     Navigator.of(context).pop();

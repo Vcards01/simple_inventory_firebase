@@ -1,6 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:simple_inventory/repository/firestorehelper.dart';
 import '../model/item.dart';
-import '../repository/dbhelper.dart';
 import 'additem.dart';
 import 'deleteorupdateitem.dart';
 
@@ -11,43 +12,11 @@ class ItemList extends StatefulWidget {
 
 class ItemListState extends State<ItemList> {
 
-  DbHelper helper = DbHelper();
-  List<Item>? items;
-  int count = 0;
-
-  void getData() {
-
-    var dbFuture = helper.initializeDb();
-
-    dbFuture.then( (result) {
-
-      var itemsFuture = helper.getItems();
-
-      itemsFuture.then( (result) {
-
-        List<Item> itemList = [];
-
-        count = result.length;
-
-        for (int i=0; i<count; i++) {
-          itemList.add(Item.fromMap(result[i]));
-        }
-
-        setState(() {
-          items = itemList;
-        });
-      });
-    });
-  }
+  // DbHelper helper = DbHelper();
+  FirestoreHelper helper = FirestoreHelper();
 
   @override
   Widget build(BuildContext context) {
-    if (items == null) {
-
-      items = [];
-
-      getData();
-    }
 
     return Scaffold(
 
@@ -63,10 +32,6 @@ class ItemListState extends State<ItemList> {
             context,
             MaterialPageRoute(builder: (context) => AddItem()),
           );
-
-          if (result != null && result) {
-            getData();
-          }
         },
         tooltip: "Adicionar novo Item",
         child: Icon(Icons.add),
@@ -74,40 +39,56 @@ class ItemListState extends State<ItemList> {
     );
   }
 
-  ListView listItems() {
-    return ListView.builder(
-      itemCount: count,
-      itemBuilder: (BuildContext context, int position) {
-        return Card(
-          elevation: 2.0,
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor: getColor(this.items![position].condition),
-            ),
-            title: Text(this.items![position].name),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Condição: ${this.items![position].condition}'),
-                Text('Descrição: ${this.items![position].description}'),
-                Text('Localização: ${this.items![position].location}'),
-              ],
-            ),
-            onTap: () {
+  StreamBuilder listItems() {
+    return StreamBuilder<QuerySnapshot>(
+      stream: helper.getItems(),
 
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => EditItem(item: this.items![position]),
+      builder: (context, snapshot){
+        if (!snapshot.hasData) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        var items = snapshot.data!.docs.map((doc)=>
+            Item.fromDocumentSnapshot(doc)
+          ).toList();
+
+        return ListView.builder(
+          itemCount: items.length,
+          itemBuilder: (BuildContext context, int position) {
+            return Card(
+              elevation: 2.0,
+              child: ListTile(
+                leading: CircleAvatar(
+                  backgroundColor: getColor(items[position].condition),
                 ),
-              ).then((value) {
-                getData();
-              });
-            },
-          ),
+                title: Text(items[position].name),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Condição: ${items[position].condition}'),
+                    Text('Descrição: ${items[position].description}'),
+                    Text('Localização: ${items[position].location}'),
+                  ],
+                ),
+                onTap: () {
+
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EditItem(item: items[position]),
+                    ),
+                  );
+                },
+              ),
+            );
+          },
         );
-      },
+
+        }
     );
+
+
   }
 
   Color getColor(String condition) {

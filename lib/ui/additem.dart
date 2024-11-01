@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:simple_inventory/repository/firestorehelper.dart';
 import '../model/item.dart';
-import '../repository/dbhelper.dart';
 
 class AddItem extends StatefulWidget {
   @override
@@ -8,7 +8,7 @@ class AddItem extends StatefulWidget {
 }
 
 class _AddItemState extends State<AddItem> {
-  DbHelper helper = DbHelper();
+  FirestoreHelper helper = FirestoreHelper();
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _locationController = TextEditingController();
@@ -79,7 +79,7 @@ class _AddItemState extends State<AddItem> {
         condition,
         description
       );
-      await helper.createItem(newItem);
+      helper.createItem(newItem);
 
 
       Navigator.pop(context, true);
