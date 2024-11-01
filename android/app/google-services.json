@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "521571813522",
+    "project_id": "avaliacao2dm3",
+    "storage_bucket": "avaliacao2dm3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:521571813522:android:6cf02ab51c687fcc383e4b",
+        "android_client_info": {
+          "package_name": "br.edu.ifsp.dm2.simple_inventory"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_JVBYUZHMUN26xSpuK9wUPqGPzKIEYms"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
